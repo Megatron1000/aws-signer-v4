@@ -1,4 +1,4 @@
-// swift-tools-version:5.1
+// swift-tools-version:6.2
 // The swift-tools-version declares the minimum version of Swift required to build this package.
 
 import PackageDescription
@@ -9,10 +9,14 @@ let package = Package(
         .library(name: "AWSSigner", targets: ["AWSSigner"])
     ],
     dependencies: [
-        .package(url: "https://github.com/apple/swift-nio", .upToNextMajor(from: "2.13.1"))
+        .package(url: "https://github.com/apple/swift-nio", exact: "2.86.2")
     ],
     targets: [
-        .target(name: "AWSSigner", dependencies: ["AWSCrypto", "NIO", "NIOHTTP1"]),
+        .target(name: "AWSSigner", dependencies: [
+            "AWSCrypto",
+            .product(name: "NIO", package: "swift-nio"),
+            .product(name: "NIOHTTP1", package: "swift-nio")
+        ]),
         .target(name: "AWSCrypto", dependencies: []),
         
         .testTarget(name: "AWSSignerTests", dependencies: ["AWSSigner"])
@@ -31,3 +35,4 @@ if useSwiftCrypto {
     package.dependencies.append(.package(url: "https://github.com/apple/swift-crypto.git", from: "1.0.0"))
     package.targets.first{$0.name == "AWSCrypto"}?.dependencies.append("Crypto")
 }
+
